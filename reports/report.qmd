@@ -657,6 +657,7 @@ ORDER BY
     `Income Group`;
 """)
 
+commit; 
 ```
 
 
