@@ -2,7 +2,7 @@
 title: Homework 8 - World Bank Analysis
 ---
 
-GITHUB URL:  <https://github.com/cmsc-vcu/cmsc408-sp2025-hw8-jleonard99>
+GITHUB URL:  <https://github.com/cmsc-vcu/cmsc408-sp2025-hw8-leiliani>
 
 
 # Problem Background
@@ -116,13 +116,17 @@ drop table if exists wdi_country;
 ```{python}
 # create table
 execute_ddl(cnx,"""
+create table wdi_country as
+select *
+from world_bank_data.wdi_country
+where region is not null;
 """)
 ```
 
 ```{python}
 # show number of records
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select count(*) from wdi_country
 """)
 ```
 
@@ -134,7 +138,7 @@ According to the World Bank, in 2020 there were how many countries in the world?
 ## (skills: select, aggregate)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select count(*) from wdi_country;
 """)
 
 ```
@@ -151,7 +155,9 @@ What are all unique values of region in the wdi_country table?
 ## (skills: select, aggregate, order by)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select distinct region
+from wdi_country
+order by region
 """)
 
 ```
@@ -165,7 +171,10 @@ How many countries are in each region?
 ## (skills: select, aggregate, group by, order by)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select region, count(*) as "Number of Countries"
+from wdi_country
+group by region
+order by region
 """)
 
 ```
@@ -179,7 +188,10 @@ List the country full names and regions for all countries in north america.
 ## (skills: select, where, order by)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select `Short Name`, region
+from wdi_country
+where region = 'North America'
+order by `Short Name`
 """)
 
 ```
@@ -192,7 +204,9 @@ select "doh!" as "Homer says ..." from dual
 ## (skills: select, where)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select region, `Short Name`, `Long Name`
+from wdi_country
+where `Short Name` = 'Qatar'
 """)
 
 ```
@@ -206,7 +220,10 @@ select "doh!" as "Homer says ..." from dual
 ## (skills: select, where, order by)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select country_code, `Short Name`, country_abbr, country_wb_abbr, region
+from wdi_country
+where country_abbr <> country_wb_abbr
+order by `Short Name`
 """)
 
 ```
@@ -220,7 +237,10 @@ select "doh!" as "Homer says ..." from dual
 ## (skills: select, aggregate, group by, order by)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select income_group, count(*) as "Number of Countries"
+from wdi_country
+group by income_group
+order by count(*) desc
 """)
 
 ```
@@ -235,7 +255,16 @@ select "doh!" as "Homer says ..." from dual
 ## in the first column.
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+SELECT
+  `Short Name`,
+  region,
+  `Income Group`
+FROM
+  wdi_country
+WHERE
+  `Income Group` IS NULL AND region IS NOT NULL
+ORDER BY
+  region;
 """)
 
 ```
@@ -249,6 +278,9 @@ select "doh!" as "Homer says ..." from dual
 ## NOTE - if you get this wrong, all subsequent tables will be wrong!
 
 execute_ddl(cnx,"""
+UPDATE wdi_country
+SET `Income Group` = 'High income'
+WHERE `Income Group` IS NULL;
 """)
 
 
@@ -257,7 +289,14 @@ execute_ddl(cnx,"""
 ## Now, display the country again to verify the change stuck!
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select
+  `Short Name` ,
+  region,
+  `Income Group`
+from
+  wdi_country
+where
+  `Short Name` = 'Venezuela'
 """)
 
 ```
@@ -271,7 +310,18 @@ select "doh!" as "Homer says ..." from dual
 ## (skills: select, aggregate, group by, order by)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+SELECT
+  region,
+  `Income Group` AS income_group,
+  count(*) AS no_of_countries
+FROM
+  wdi_country
+WHERE
+  region IS NOT NULL AND `Income Group` IS NOT NULL
+GROUP BY
+  region, `Income Group`
+ORDER BY
+  region, `Income Group`;
 """)
 
 ```
@@ -292,7 +342,19 @@ select "doh!" as "Homer says ..." from dual
 ## (skills: select, aggregate, group by, nested query)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+SELECT
+  region,
+  SUM(CASE WHEN `Income Group` = 'Low income' THEN 1 ELSE 0 END) AS `Low Income`,
+  SUM(CASE WHEN `Income Group` = 'Lower middle income' THEN 1 ELSE 0 END) AS `Low Middle`,
+  SUM(CASE WHEN `Income Group` = 'Upper middle income' THEN 1 ELSE 0 END) AS `Upper Middle`,
+  SUM(CASE WHEN `Income Group` = 'High income' THEN 1 ELSE 0 END) AS `High Income`,
+  SUM(1) AS "Row Total"
+FROM
+  wdi_country
+GROUP BY
+  region
+ORDER BY
+  region;
 """)
 
 ```
@@ -312,7 +374,21 @@ select "doh!" as "Homer says ..." from dual
 ## (skills: select, aggregate, group by, nested query, order by, limit)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select
+  count(*),
+  region,
+  `Income Group`
+from
+  wdi_country
+where
+  `Income Group` = 'Low Income'
+group by
+  region,
+  `Income Group`
+order by
+  count(*) desc
+limit
+  1
 """)
 
 ```
@@ -329,7 +405,19 @@ select "doh!" as "Homer says ..." from dual
 ## (skills: select, where, subquery)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+select
+  `Country Code`,
+  `Short Name`,
+  region,
+  `Income Group`
+from
+  wdi_country
+where
+  1=1
+  and `Income Group` = (select `Income Group` from wdi_country where `Country Code`='MHL')
+  and region = (select region from wdi_country where `Country Code`='MHL')
+order by
+  `Short Name`
 """)
 
 ```
@@ -354,7 +442,37 @@ select "doh!" as "Homer says ..." from dual
 ## (skills: select, where, subqueries, joins)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+with region_cte as (
+    select region
+    from wdi_country
+    group by region
+),
+income_cte as (
+    select `Income Group`
+    from wdi_country
+    where `Income Group` is not NULL
+    group by `Income Group`
+),
+pair_cte as (
+    select *
+    from region_cte, income_cte
+),
+merge_cte as (
+    select
+       a.region, a.`Income Group`, count(b.`Short Name`) as Num_Countries
+    from pair_cte a
+    left join wdi_country b on (
+            a.region = b.region
+            and a.`Income Group` = b.`Income Group`
+        )
+    group by 
+    a.region, a.`Income Group`
+)
+select *
+from merge_cte
+where 
+    Num_Countries = 0;
+
 """)
 
 ```
@@ -378,7 +496,56 @@ select "doh!" as "Homer says ..." from dual
 ## (skills: select, where, subqueries, joins, aggregate functions)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+WITH 
+region_cte AS (
+    SELECT region, COUNT(*) AS region_cnt 
+    FROM wdi_country
+    WHERE region IS NOT NULL
+    GROUP BY region
+), 
+income_cte AS (
+    SELECT `Income Group`, COUNT(*) AS income_cnt
+    FROM wdi_country
+    WHERE `Income Group` IS NOT NULL
+    GROUP BY `Income Group`
+), 
+total_cte AS (
+    SELECT COUNT(*) AS total_cnt
+    FROM wdi_country
+    WHERE region IS NOT NULL AND `Income Group` IS NOT NULL
+), 
+pair_cte AS (
+    SELECT
+        region,
+        `Income Group`,
+        COUNT(*) AS pair_cnt
+    FROM
+        wdi_country
+    WHERE
+        region IS NOT NULL
+        AND `Income Group` IS NOT NULL
+    GROUP BY
+        region, `Income Group`
+), 
+merge_cte AS (
+    SELECT
+        a.region,
+        a.`Income Group`,
+        a.pair_cnt,
+        b.region_cnt,
+        c.income_cnt,
+        d.total_cnt,
+        ROUND(100.0 * a.pair_cnt / d.total_cnt, 1) AS `Pct of Total`
+    FROM
+        pair_cte a
+        LEFT JOIN region_cte b ON a.region = b.region
+        LEFT JOIN income_cte c ON a.`Income Group` = c.`Income Group`
+        CROSS JOIN total_cte d
+)
+SELECT * 
+FROM merge_cte
+ORDER BY region, `Income Group`;
+
 """)
 
 
@@ -392,7 +559,59 @@ select "doh!" as "Homer says ..." from dual
 ## columns, Region in the rows and Percent of total in each cell of the table.
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+WITH 
+region_cte AS (
+    SELECT region, COUNT(*) AS region_cnt 
+    FROM wdi_country 
+    GROUP BY region
+), 
+income_cte AS (
+    SELECT `Income Group`, COUNT(*) AS income_cnt 
+    FROM wdi_country 
+    GROUP BY `Income Group`
+), 
+total_cte AS (
+    SELECT COUNT(*) AS total_cnt 
+    FROM wdi_country
+), 
+pair_cte AS (
+    SELECT
+        region,
+        `Income Group`,
+        COUNT(*) AS pair_cnt
+    FROM
+        wdi_country
+    GROUP BY
+        region, `Income Group`
+), 
+merge_cte AS (
+    SELECT
+        a.region,
+        a.`Income Group`,
+        a.pair_cnt,
+        b.region_cnt,
+        c.income_cnt AS income_cnt,  -- corrected alias
+        d.total_cnt,
+        100.0 * a.pair_cnt / d.total_cnt AS pct
+    FROM
+        pair_cte a
+        LEFT JOIN region_cte b ON a.region = b.region
+        LEFT JOIN income_cte c ON a.`Income Group` = c.`Income Group`
+        CROSS JOIN total_cte d
+)
+SELECT
+    region,
+    ROUND(SUM(CASE WHEN `Income Group` = 'Low income' THEN pct ELSE 0 END), 1) AS `Low Income`,
+    ROUND(SUM(CASE WHEN `Income Group` = 'Lower middle income' THEN pct ELSE 0 END), 1) AS `Low Middle`,
+    ROUND(SUM(CASE WHEN `Income Group` = 'Upper middle income' THEN pct ELSE 0 END), 1) AS `Upper Middle`,
+    ROUND(SUM(CASE WHEN `Income Group` = 'High income' THEN pct ELSE 0 END), 1) AS `High Income`,
+    ROUND(SUM(pct), 1) AS `Row Total`
+FROM
+    merge_cte
+GROUP BY
+    region
+ORDER BY
+    region;
 """)
 
 ```
@@ -407,7 +626,27 @@ select "doh!" as "Homer says ..." from dual
 ## (This is much simpler than task 20!)
 
 run_sql_and_return_html(cnx,"""
-select "doh!" as "Homer says ..." from dual
+WITH 
+income_cte AS (
+    SELECT `Income Group`, COUNT(*) AS income_cnt
+    FROM wdi_country
+    WHERE `Income Group` IS NOT NULL
+    GROUP BY `Income Group`
+),
+total_cte AS (
+    SELECT COUNT(*) AS total_cnt
+    FROM wdi_country
+)
+SELECT
+    `Income Group`,
+    income_cnt,
+    total_cnt,
+    ROUND(100.0 * income_cnt / total_cnt, 1) AS `Pct of Total`
+FROM
+    income_cte,
+    total_cte
+ORDER BY
+    `Income Group`;
 """)
 
 ```
