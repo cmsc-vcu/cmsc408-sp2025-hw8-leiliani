@@ -658,24 +658,27 @@ ORDER BY
 
 1. Reflect on the SQL skills you used throughout these exercises. Which skills do you feel most confident in, and which do you think need more practice? How has this assignment helped you build or reinforce specific SQL competencies?
 
-( response goes here)
+Throughout these exercises, I felt most confident using basic SQL operations like SELECT, WHERE, ORDER BY, and simple GROUP BY queries. I was also comfortable using aggregate functions such as COUNT and SUM to summarize the data. The skills that I realized I need more practice with include more advanced operations like using CASE statements for conditional aggregation and writing nested subqueries to reference results from one query inside another. The repeated practice through the countless exercises helped reinforce SQL in my brain. I also became more comfortable with updating records and committing changes carefully, which is crucial when working in production databases.
 
 2. Problem-Solving Approach: Describe your approach to tackling the more complex tasks (like Tasks 18, 23, and 24). How did you break down these problems, and what steps did you take when you encountered challenges? How would you approach a similar problem differently in the future?
 
-( response goes here)
+For the more complex tasks like 18, 23, and 24, my approach was to break each problem into smaller parts. First, I reread the task description carefully to make sure I understood the expected output. Then, I identified what basic queries or SQL concepts would be involved (e.g., grouping, conditional counts, subqueries). I often started by writing a simple version of the query to make sure I was selecting the right data, and then gradually added more complexity (like a CASE statement or subquery) once I knew the base was correct.
+
+When I encountered challenges, I would test small parts of the query individually, or look at a few rows of output to debug mistakes. If I got stuck, I sometimes rewrote the query using a different strategy or read the hints provided in the notebook.
+
+In the future, for very complex SQL problems, I would plan my queries more visually first—maybe sketching a diagram of relationships or the desired output table—before jumping into coding. This would save time debugging and make my logic clearer from the start.
 
 
 3. Learning Takeaways: Consider the overall learning experience from this assignment. What were the biggest takeaways about working with SQL for data analysis and transformation? How do you think these skills will apply in real-world scenarios or future coursework?
 
-( response goes here)
+The biggest takeaway from this assignment was seeing that SQL is not just about retrieving data, but also about transforming, cleaning, and summarizing data into meaningful reports. I also learned how important attention to detail is, especially when working with real-world data that can be messy or inconsistent (like missing income groups or non-country entries).
+
+These skills are directly applicable to many real-world scenarios, such as business reporting, scientific data analysis, and building back-end data pipelines for applications. In future coursework, especially classes related to data science, databases, or machine learning, being able to quickly and accurately manipulate datasets using SQL will be a huge advantage. I feel much more prepared to work with real databases after completing this homework.
 
 
 # README
 
 A quality README is an important part of EVERY project. Using the Quarto *include* command we're including a copy of your README in the project report so that a human can evaluate it.
-
-Make sure that you edit the README so that it's explanatory!  Note that you don't need a readme within the *reports* folder for this assignment. We're only
-focused on the root *README.md*.
 
 [Here is some info](https://www.freecodecamp.org/news/how-to-write-a-good-readme-file/) on how to write a good README!
 
