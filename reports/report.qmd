@@ -289,7 +289,8 @@ ORDER BY
 execute_ddl(cnx,"""
 UPDATE wdi_country
 SET `Income Group` = 'High income'
-WHERE `Income Group` IS NULL;
+WHERE `Income Group` IS NULL
+  AND TRIM(`Short Name`) = 'Venezuela';
 """)
 
 
@@ -298,14 +299,14 @@ WHERE `Income Group` IS NULL;
 ## Now, display the country again to verify the change stuck!
 
 run_sql_and_return_html(cnx,"""
-select
-  `Short Name` ,
+SELECT
+  `Short Name`,
   region,
   `Income Group`
-from
+FROM
   wdi_country
-where
-  `Short Name` = 'Venezuela'
+WHERE
+  TRIM(`Short Name`) = 'Venezuela';
 """)
 
 ```
