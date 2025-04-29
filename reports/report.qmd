@@ -198,7 +198,7 @@ FROM wdi_country
 WHERE region = 'North America'
 ORDER BY
   CASE
-    WHEN `Long Name` LIKE 'The %' THEN SUBSTRING(`Long Name`, 5)
+    WHEN `Long Name` LIKE 'The %%' THEN SUBSTRING(`Long Name`, 5)
     ELSE `Long Name`
   END
 """)
