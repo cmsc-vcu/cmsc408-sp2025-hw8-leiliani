@@ -293,7 +293,6 @@ WHERE `Short Name` = 'Venezuela';
 COMMIT;
 """)
 
-cnx.commit()
 ```
 ```{python}
 ## Now, display the country again to verify the change stuck!
@@ -317,8 +316,8 @@ WHERE `Short Name` = 'Venezuela';
 run_sql_and_return_html(cnx,"""
 SELECT
   region,
-  `Income Group` AS income_group,
-  count(*) AS no_of_countries
+  `Income Group',
+  count(*) AS count(*)
 FROM
   wdi_country
 WHERE
@@ -464,7 +463,7 @@ pair_cte as (
 ),
 merge_cte as (
     select
-       a.region, a.`Income Group`, count(b.`Short Name`) as Num_Countries
+       a.region, a.`Income Group`, count(b.`Short Name`) as '# Countries'
     from pair_cte a
     left join wdi_country b on (
             a.region = b.region
@@ -548,8 +547,7 @@ merge_cte AS (
         CROSS JOIN total_cte d
 )
 SELECT * 
-FROM merge_cte
-ORDER BY region, `Income Group`;
+FROM merge_cte;
 """)
 
 ```
