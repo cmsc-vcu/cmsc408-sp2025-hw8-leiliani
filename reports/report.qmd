@@ -316,16 +316,18 @@ WHERE `Short Name` = 'Venezuela';
 run_sql_and_return_html(cnx,"""
 SELECT
   region,
-  `Income Group',
-  count(*) AS count(*)
+  `Income Group`,
+  COUNT(*) AS no_of_countries
 FROM
   wdi_country
 WHERE
-  region IS NOT NULL AND `Income Group` IS NOT NULL
+  region IS NOT NULL 
+  AND `Income Group` IS NOT NULL
 GROUP BY
   region, `Income Group`
 ORDER BY
   region, `Income Group`;
+
 """)
 
 ```
@@ -446,36 +448,41 @@ order by
 ## (skills: select, where, subqueries, joins)
 
 run_sql_and_return_html(cnx,"""
-with region_cte as (
-    select region
-    from wdi_country
-    group by region
+WITH region_cte AS (
+  SELECT region
+  FROM wdi_country
+  WHERE region IS NOT NULL
+  GROUP BY region
 ),
-income_cte as (
-    select `Income Group`
-    from wdi_country
-    where `Income Group` is not NULL
-    group by `Income Group`
+income_cte AS (
+  SELECT `Income Group`
+  FROM wdi_country
+  WHERE `Income Group` IS NOT NULL
+  GROUP BY `Income Group`
 ),
-pair_cte as (
-    select *
-    from region_cte, income_cte
+pair_cte AS (
+  SELECT 
+    region_cte.region, 
+    income_cte.`Income Group`
+  FROM region_cte
+  CROSS JOIN income_cte
 ),
-merge_cte as (
-    select
-       a.region, a.`Income Group`, count(b.`Short Name`) as '# Countries'
-    from pair_cte a
-    left join wdi_country b on (
-            a.region = b.region
-            and a.`Income Group` = b.`Income Group`
-        )
-    group by 
-    a.region, a.`Income Group`
+merge_cte AS (
+  SELECT
+    a.region, 
+    a.`Income Group`, 
+    COUNT(b.`Short Name`) AS `# Countries`
+  FROM pair_cte a
+  LEFT JOIN wdi_country b 
+    ON a.region = b.region
+    AND a.`Income Group` = b.`Income Group`
+  GROUP BY 
+    a.region, 
+    a.`Income Group`
 )
-select *
-from merge_cte
-where 
-    Num_Countries = 0;
+SELECT *
+FROM merge_cte
+WHERE `# Countries` = 0;
 
 """)
 
